@@ -40,12 +40,12 @@ func (c *Client) Post(path string, param map[string]string) (body []byte, err er
 	for k, v := range param {
 		data.Add(k, v)
 	}
-	sn := c.sign(path, &data)
+	sn := c.sign(path, data)
 	if sn != "" {
 		data.Add("sn", sn)
 	}
 
-	_, body, err = c.httpClient.Post(nil, apiRootPath+path, &data)
+	_, body, err = c.httpClient.Post(nil, apiRootPath+path, data)
 
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func (c *Client) Get(path string, param map[string]string) (body []byte, err err
 	for k, v := range param {
 		data.Add(k, v)
 	}
-	sn := c.sign(path, &data)
+	sn := c.sign(path, data)
 	if sn != "" {
 		data.Add("sn", sn)
 	}
