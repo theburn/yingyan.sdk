@@ -1,6 +1,7 @@
 package yingyan
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/valyala/fasthttp"
@@ -32,7 +33,8 @@ func (c *Client) SetHttpClient(httpClient *fasthttp.Client) {
 }
 
 func (c *Client) Post(path string, param map[string]string) (body []byte, err error) {
-	data := fasthttp.Args{}
+	data := fasthttp.AcquireArgs()
+	defer fasthttp.ReleaseArgs(data)
 	data.Add("ak", c.ak)
 	data.Add("service_id", c.serviceID)
 	for k, v := range param {
@@ -54,7 +56,9 @@ func (c *Client) Post(path string, param map[string]string) (body []byte, err er
 
 func (c *Client) Get(path string, param map[string]string) (body []byte, err error) {
 
-	data := fasthttp.Args{}
+	data := fasthttp.AcquireArgs()
+	defer fasthttp.ReleaseArgs(data)
+
 	data.Add("ak", c.ak)
 	data.Add("service_id", c.serviceID)
 	for k, v := range param {
@@ -64,10 +68,12 @@ func (c *Client) Get(path string, param map[string]string) (body []byte, err err
 	if sn != "" {
 		data.Add("sn", sn)
 	}
-	_, body, err = c.httpClient.GetTimeout(nil, apiRootPath+path+"?"+data.Encode(), 10*time.Second)
+
+	_, body, err = c.httpClient.GetTimeout(nil, apiRootPath+path+"?"+fmt.Sprint(data.QueryString()), 10*time.Second)
 
 	if err != nil {
 		return nil, err
 	}
+
 	return body, nil
 }
