@@ -1,0 +1,4 @@
+package: yingyan.sdk
+import: []
+testImport:
+- package: github.com/cnjack/yingyan.sdk

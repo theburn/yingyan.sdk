@@ -1,17 +1,17 @@
 package yingyan
 
 import (
+	"io/ioutil"
+	"net/http"
 	"net/url"
-	"time"
-
-	"github.com/valyala/fasthttp"
+	"strconv"
 )
 
 type Client struct {
 	ak         string
 	sk         string
-	httpClient *fasthttp.Client
-	serviceID  string
+	httpClient *http.Client
+	serviceID  int
 	s          bool
 }
 
@@ -23,19 +23,19 @@ func NewClient(ak, sk string, serviceID int) *Client {
 		ak:         ak,
 		s:          true,
 		serviceID:  serviceID,
-		httpClient: &fasthttp.Client{},
+		httpClient: &http.Client{},
 	}
 }
 
 // SetHttpClient you can set your own http client
-func (c *Client) SetHttpClient(httpClient *fasthttp.Client) {
+func (c *Client) SetHttpClient(httpClient *http.Client) {
 	c.httpClient = httpClient
 }
 
 func (c *Client) Post(path string, param map[string]string) (body []byte, err error) {
-	data := fasthttp.Args{}
+	data := url.Values{}
 	data.Add("ak", c.ak)
-	data.Add("service_id", c.serviceID)
+	data.Add("service_id", strconv.Itoa(c.serviceID))
 	for k, v := range param {
 		data.Add(k, v)
 	}
@@ -44,20 +44,17 @@ func (c *Client) Post(path string, param map[string]string) (body []byte, err er
 		data.Add("sn", sn)
 	}
 	resp, err := c.httpClient.PostForm(apiRootPath+path, data)
-
-	_, body, err := c.httpClient.Post(nil, apiRootPath+path, data)
-
 	if err != nil {
 		return nil, err
 	}
-
-	return body, nil
+	defer resp.Body.Close()
+	return ioutil.ReadAll(resp.Body)
 }
 
 func (c *Client) Get(path string, param map[string]string) (body []byte, err error) {
 	data := url.Values{}
 	data.Add("ak", c.ak)
-	data.Add("service_id", c.serviceID)
+	data.Add("service_id", strconv.Itoa(c.serviceID))
 	for k, v := range param {
 		data.Add(k, v)
 	}
@@ -65,10 +62,10 @@ func (c *Client) Get(path string, param map[string]string) (body []byte, err err
 	if sn != "" {
 		data.Add("sn", sn)
 	}
-	_, body, err := c.httpClient.GetTimeout(nil, apiRootPath+path+"?"+data.Encode(), 10*time.Second)
-
+	resp, err := c.httpClient.Get(apiRootPath + path + "?" + data.Encode())
 	if err != nil {
 		return nil, err
 	}
-	return body, nil
+	defer resp.Body.Close()
+	return ioutil.ReadAll(resp.Body)
 }

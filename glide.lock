@@ -1,0 +1,21 @@
+hash: 0152c6d6878df72bc37033fe478783465453b19c6aa7d2706b8f9341c999de49
+updated: 2017-11-07T14:18:00.093058917+08:00
+imports:
+- name: github.com/klauspost/compress
+  version: ea08389e0dc46025380296f7dd04ab0e8de36adb
+  subpackages:
+  - flate
+  - gzip
+  - zlib
+- name: github.com/klauspost/cpuid
+  version: ae7887de9fa5d2db4eaa8174a7eff2c1ac00f2da
+- name: github.com/valyala/bytebufferpool
+  version: e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7
+- name: github.com/valyala/fasthttp
+  version: 70ceaddfae639b5f0eca290382de18f64d5aa62d
+  subpackages:
+  - fasthttputil
+  - stackless
+testImports:
+- name: github.com/cnjack/yingyan.sdk
+  version: d2a81bec466dd29fac2e75e0239d23444cc87d94
