@@ -33,9 +33,9 @@ func (c *Client) SetHttpClient(httpClient *fasthttp.Client) {
 }
 
 func (c *Client) Post(path string, param map[string]string) (body []byte, err error) {
-	//	data := fasthttp.AcquireArgs()
-	//	defer fasthttp.ReleaseArgs(data)
-	data := &fasthttp.Args{}
+	data := fasthttp.AcquireArgs()
+	defer fasthttp.ReleaseArgs(data)
+	//data := &fasthttp.Args{}
 	data.Add("ak", c.ak)
 	data.Add("service_id", c.serviceID)
 	for k, v := range param {
