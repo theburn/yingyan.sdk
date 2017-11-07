@@ -4,9 +4,11 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"net/url"
+
+	"github.com/valyala/fasthttp"
 )
 
-func (c *Client) sign(uri string, param *url.Values) (sn string) {
+func (c *Client) sign(uri string, param *fasthttp.Args) (sn string) {
 	if c.sk == "" {
 		return
 	}

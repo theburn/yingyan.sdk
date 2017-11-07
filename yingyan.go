@@ -17,7 +17,7 @@ type Client struct {
 
 // visit http://lbsyun.baidu.com/apiconsole/key/ 获取ak
 // 如果设置的白名单则设置sk ""
-func NewClient(ak, sk string, serviceID int) *Client {
+func NewClient(ak, sk, serviceID string) *Client {
 	return &Client{
 		sk:         sk,
 		ak:         ak,
@@ -43,7 +43,6 @@ func (c *Client) Post(path string, param map[string]string) (body []byte, err er
 	if sn != "" {
 		data.Add("sn", sn)
 	}
-	resp, err := c.httpClient.PostForm(apiRootPath+path, data)
 
 	_, body, err := c.httpClient.Post(nil, apiRootPath+path, data)
 
