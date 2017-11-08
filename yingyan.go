@@ -1,8 +1,6 @@
 package yingyan
 
 import (
-	"sort"
-	"strings"
 	"time"
 
 	"github.com/valyala/fasthttp"
@@ -31,23 +29,6 @@ func NewClient(ak, sk, serviceID string) *Client {
 // SetHttpClient you can set your own http client
 func (c *Client) SetHttpClient(httpClient *fasthttp.Client) {
 	c.httpClient = httpClient
-}
-
-func sortParam(param map[string]string) ([]string, string) {
-	keySlice := make([]string, 0, 10)
-	sortedKVSlice := make([]string, 0, 10)
-
-	for k, _ := range param {
-		keySlice = append(keySlice, k)
-	}
-
-	sort.Strings(keySlice)
-
-	for i := 0; i < len(keySlice); i++ {
-		sortedKVSlice = append(sortedKVSlice, keySlice[i]+"="+param[keySlice[i]])
-	}
-
-	return keySlice, strings.Join(sortedKVSlice, "&")
 }
 
 func (c *Client) Post(path string, param map[string]string) (body []byte, err error) {
