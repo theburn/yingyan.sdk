@@ -8,7 +8,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-var snCache map[string]string = make(map[string]string, 0, 1024)
+var snCache map[string]string = make(map[string]string)
 
 func (c *Client) sign(uri string, param *fasthttp.Args) (sn string) {
 	if c.sk == "" {
