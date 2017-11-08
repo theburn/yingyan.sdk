@@ -1,6 +1,7 @@
 package yingyan
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/valyala/fasthttp"
@@ -31,20 +32,27 @@ func (c *Client) SetHttpClient(httpClient *fasthttp.Client) {
 	c.httpClient = httpClient
 }
 
-func (c *Client) Post(path string, param map[string]string) (body []byte, err error) {
+var snCache = make(map[string]string)
 
+func (c *Client) Post(path string, param map[string]string) (body []byte, err error) {
+	var sn string
 	param["ak"] = c.ak
 	param["service_id"] = c.serviceID
 
-	sortKeys, sortQueryString := sortParam(param)
+	snKey := fmt.Sprintf("%s%s", path, param)
+	if sn = snCache[snKey]; sn == "" {
+		sortQueryString := sortParam(param)
+		sn = c.sign(path, sortQueryString)
+		snCache[snKey] = sn
+	} else {
+		sn = snCache[snKey]
+	}
 
 	data := &fasthttp.Args{}
 
-	for _, k := range sortKeys {
+	for _, k := range sortParamKeys(param) {
 		data.Add(k, param[k])
 	}
-
-	sn := c.sign(path, sortQueryString)
 
 	if sn != "" {
 		data.Add("sn", sn)
@@ -60,21 +68,21 @@ func (c *Client) Post(path string, param map[string]string) (body []byte, err er
 }
 
 func (c *Client) Get(path string, param map[string]string) (body []byte, err error) {
+	var sn, sortQueryString string
 	param["ak"] = c.ak
 	param["service_id"] = c.serviceID
 
-	sortKeys, sortQueryString := sortParam(param)
-
-	data := &fasthttp.Args{}
-
-	for _, k := range sortKeys {
-		data.Add(k, param[k])
+	snKey := fmt.Sprintf("%s%s", path, param)
+	if sn = snCache[snKey]; sn == "" {
+		sortQueryString = sortParam(param)
+		sn = c.sign(path, sortQueryString)
+		snCache[snKey] = sn
+	} else {
+		sn = snCache[snKey]
 	}
 
-	sn := c.sign(path, sortQueryString)
-
 	if sn != "" {
-		data.Add("sn", sn)
+		sortQueryString += sortQueryString + "&sn=" + sn
 	}
 
 	_, body, err = c.httpClient.GetTimeout(nil, apiRootPath+path+"?"+sortQueryString, 10*time.Second)
