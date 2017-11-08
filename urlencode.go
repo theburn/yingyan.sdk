@@ -41,7 +41,6 @@ func encodeQueryString(queryString string) string {
 
 func sortParamKeys(param map[string]string) []string {
 	keySlice := make([]string, 0, 10)
-	sortedKVSlice := make([]string, 0, 10)
 
 	for k, _ := range param {
 		keySlice = append(keySlice, k)
