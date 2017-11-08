@@ -44,7 +44,7 @@ func sortParam(param map[string]string) ([]string, string) {
 	sort.Strings(keySlice)
 
 	for i := 0; i < len(keySlice); i++ {
-		sortedKVSlice = append(sortedKVSlice, keySlice[i]+"="+x[keySlice[i]])
+		sortedKVSlice = append(sortedKVSlice, keySlice[i]+"="+param[keySlice[i]])
 	}
 
 	return keySlice, strings.Join(sortedKVSlice, "&")
@@ -60,7 +60,7 @@ func (c *Client) Post(path string, param map[string]string) (body []byte, err er
 	data := &fasthttp.Args{}
 
 	for _, k := range sortKeys {
-		data.Add(sortKeys[k], param[sortKeys[k]])
+		data.Add(k, param[k])
 	}
 
 	sn := c.sign(path, sortQueryString)
@@ -87,13 +87,7 @@ func (c *Client) Get(path string, param map[string]string) (body []byte, err err
 	data := &fasthttp.Args{}
 
 	for _, k := range sortKeys {
-		data.Add(sortKeys[k], param[sortKeys[k]])
-	}
-
-	sn := c.sign(path, sortQueryString)
-
-	if sn != "" {
-		data.Add("sn", sn)
+		data.Add(k, param[k])
 	}
 
 	sn := c.sign(path, sortQueryString)
