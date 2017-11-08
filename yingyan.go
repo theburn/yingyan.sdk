@@ -61,6 +61,7 @@ func (c *Client) Get(path string, param map[string]string) (body []byte, err err
 	}
 	data.Add("service_id", c.serviceID)
 	sn := c.sign(path, data)
+
 	if sn != "" {
 		data.Add("sn", sn)
 	}
