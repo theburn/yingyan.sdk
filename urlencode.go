@@ -39,7 +39,20 @@ func encodeQueryString(queryString string) string {
 	return string(appendQuotedPath(v, b))
 }
 
-func sortParam(param map[string]string) ([]string, string) {
+func sortParamKeys(param map[string]string) []string {
+	keySlice := make([]string, 0, 10)
+	sortedKVSlice := make([]string, 0, 10)
+
+	for k, _ := range param {
+		keySlice = append(keySlice, k)
+	}
+
+	sort.Strings(keySlice)
+
+	return keySlice
+}
+
+func sortParam(param map[string]string) string {
 	keySlice := make([]string, 0, 10)
 	sortedKVSlice := make([]string, 0, 10)
 
@@ -53,5 +66,5 @@ func sortParam(param map[string]string) ([]string, string) {
 		sortedKVSlice = append(sortedKVSlice, keySlice[i]+"="+param[keySlice[i]])
 	}
 
-	return keySlice, encodeQueryString(strings.Join(sortedKVSlice, "&"))
+	return encodeQueryString(strings.Join(sortedKVSlice, "&"))
 }
