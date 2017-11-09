@@ -31,12 +31,11 @@ func hexCharUpper(c byte) byte {
 
 }
 
-func encodeQueryString(queryString string) string {
-	b := []byte(queryString)
+func encodeQueryString(querybytes []byte) string {
 
-	var v = make([]byte, 0, 1024*1024)
+	var v = make([]byte, 0, len(querybytes))
 
-	return string(appendQuotedPath(v, b))
+	return string(appendQuotedPath(v, querybytes))
 }
 
 func sortParamKeys(param map[string]string) []string {
@@ -52,8 +51,9 @@ func sortParamKeys(param map[string]string) []string {
 }
 
 func sortParam(param map[string]string) ([]string, string) {
-	keySlice := make([]string, 0, 10)
-	sortedKVSlice := make([]string, 0, 10)
+	l := len(param)
+	keySlice := make([]string, 0, l)
+	sortedKVSlice := make([]string, 0, l)
 
 	for k, _ := range param {
 		keySlice = append(keySlice, k)
@@ -65,5 +65,5 @@ func sortParam(param map[string]string) ([]string, string) {
 		sortedKVSlice = append(sortedKVSlice, keySlice[i]+"="+param[keySlice[i]])
 	}
 
-	return keySlice, encodeQueryString(strings.Join(sortedKVSlice, "&"))
+	return keySlice, encodeQueryString([]byte(strings.Join(sortedKVSlice, "&")))
 }
