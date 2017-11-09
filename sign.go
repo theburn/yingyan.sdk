@@ -16,7 +16,6 @@ func (c *Client) sign(uri string, sortParamString string) (sn string) {
 	hash := md5.New()
 	hash.Write([]byte(url.QueryEscape(o)))
 	sn = hex.EncodeToString(hash.Sum(nil))
-	snCache[o] = sn
 	return
 
 }
