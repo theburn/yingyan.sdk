@@ -1,7 +1,6 @@
 package yingyan
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/valyala/fasthttp"
@@ -32,25 +31,17 @@ func (c *Client) SetHttpClient(httpClient *fasthttp.Client) {
 	c.httpClient = httpClient
 }
 
-var snCache = make(map[string]string)
-
 func (c *Client) Post(path string, param map[string]string) (body []byte, err error) {
 	var sn string
 	param["ak"] = c.ak
 	param["service_id"] = c.serviceID
 
-	snKey := fmt.Sprintf("%s%s", path, param)
-	if sn = snCache[snKey]; sn == "" {
-		sortQueryString := sortParam(param)
-		sn = c.sign(path, sortQueryString)
-		snCache[snKey] = sn
-	} else {
-		sn = snCache[snKey]
-	}
+	sortKeys, sortQueryString := sortParam(param)
+	sn = c.sign(path, sortQueryString)
 
 	data := &fasthttp.Args{}
 
-	for _, k := range sortParamKeys(param) {
+	for _, k := range sortKeys {
 		data.Add(k, param[k])
 	}
 
@@ -72,14 +63,8 @@ func (c *Client) Get(path string, param map[string]string) (body []byte, err err
 	param["ak"] = c.ak
 	param["service_id"] = c.serviceID
 
-	snKey := fmt.Sprintf("%s%s", path, param)
-	if sn = snCache[snKey]; sn == "" {
-		sortQueryString = sortParam(param)
-		sn = c.sign(path, sortQueryString)
-		snCache[snKey] = sn
-	} else {
-		sn = snCache[snKey]
-	}
+	_, sortQueryString = sortParam(param)
+	sn = c.sign(path, sortQueryString)
 
 	if sn != "" {
 		sortQueryString += sortQueryString + "&sn=" + sn
